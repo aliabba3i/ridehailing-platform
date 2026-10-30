@@ -1,3 +1,8 @@
+[![CI](https://img.shields.io/github/actions/workflow/status/aliabba3i/ridehailing-platform/ci.yml?branch=main&label=CI)](https://github.com/aliabba3i/ridehailing-platform/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/aliabba3i/ridehailing-platform?label=release)](https://github.com/aliabba3i/ridehailing-platform/releases/latest)
+[![MIT License](https://img.shields.io/github/license/aliabba3i/ridehailing-platform)](https://github.com/aliabba3i/ridehailing-platform/blob/main/LICENSE)
+[![GHCR](https://img.shields.io/badge/GHCR-published-blue?logo=github)](https://github.com/aliabba3i/ridehailing-platform/pkgs/container/ridehailing-platform)
+
 # RideHailing Platform
 
 A TypeScript monorepo for a ride-hailing product: Express/Prisma API, Socket.IO location broadcasts, Expo rider and driver applications, and a Next.js admin dashboard. Currency is **IRR**; money is stored in integer units.
@@ -14,21 +19,23 @@ A TypeScript monorepo for a ride-hailing product: Express/Prisma API, Socket.IO 
 
 ## Start locally
 
-Requires Node 22, npm 10, PostgreSQL 16 and Redis 7 (or Docker).
+Requires **Node.js 22+**, **npm 10+**, and **Docker with Docker Compose** (or separately installed PostgreSQL 16 and Redis 7). All commands below run from the **repository root**, unless otherwise stated.
 
-1. `cp .env.example .env`; replace JWT secrets and the bootstrap password.
-2. `npm install`
-3. `docker compose up -d postgres redis`
-4. `npm run build -w @ride/shared` and `npm run db:generate`
-5. `npm run db:migrate`
-6. `npm run db:seed` (optional demo admin; never run on public production data)
-7. `npm run dev`; API is available at `http://localhost:4000`.
-8. `npm run dev -w @ride/admin` for the dashboard.
-9. `npm run start -w @ride/rider` and `npm run start -w @ride/driver` for Expo.
+1. Copy `.env.example` to `.env` (`cp .env.example .env` on macOS/Linux; `Copy-Item .env.example .env` in PowerShell).
+2. Replace both `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` with **different, random secrets of at least 32 characters**. Set a strong `ADMIN_PASSWORD` (12+ characters) and your intended `ADMIN_EMAIL` before seeding. Never commit `.env`.
+3. Install dependencies with `npm install`.
+4. Start the databases with `docker compose up -d postgres redis` (PostgreSQL on `localhost:5432`; Redis on `localhost:6379`).
+5. Build the shared package: `npm run build -w @ride/shared`.
+6. Generate the Prisma client: `npm run db:generate`.
+7. Apply development migrations: `npm run db:migrate`.
+8. Optionally create the admin login with `npm run db:seed`. The seed stores `ADMIN_EMAIL` as the login identifier in the user's `phone` field. This step is required to sign in to the admin dashboard, but not to register riders or drivers.
+9. Start the API with `npm run dev`; its base URL is **http://localhost:4000** and its liveness endpoint is `http://localhost:4000/health`.
+10. In a second terminal, start the admin dashboard with `npm run dev -w @ride/admin`; open **http://localhost:3000**.
+11. For mobile development, start `npm run start -w @ride/rider` and `npm run start -w @ride/driver` in separate terminals. The applications use Expo.
 
-For physical phones set `EXPO_PUBLIC_API_URL` to your computer's reachable LAN URL, not localhost.
+The backend and Prisma workspace scripts read the **root `.env`** file. Expo and Next.js load their own app-local environment files: to override the API origin, put `EXPO_PUBLIC_API_URL=http://YOUR_LAN_IP:4000` in both `apps/rider/.env.local` and `apps/driver/.env.local`, and put `NEXT_PUBLIC_API_URL=http://localhost:4000` in `apps/admin/.env.local` if necessary. Restart the development servers after changing these files. For physical phones, use your computer's reachable LAN address rather than `localhost`. The API origin should **not** include `/api/v1`; endpoints in this repository are rooted directly at `/auth`, `/rides`, etc.
 
-`docker compose up --build` starts PostgreSQL, Redis, backend and dashboard. Its backend runs Prisma migrations at boot (suitable for a single instance; use a serialized deployment job for replicas).
+**Docker-only alternative:** After configuring root `.env`, run `docker compose up --build -d` to start PostgreSQL, Redis, the backend on port 4000, and the admin dashboard on port 3000. The backend runs committed Prisma migrations during container startup; it **does not** automatically seed an admin account. Use `npm run db:seed` from the host after installing npm dependencies and configuring database access if an admin account is required. Container startup migrations are intended for a single instance; use a dedicated migration job in replicated deployments.
 
 ## Roles and ride flow
 

@@ -8,9 +8,9 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
+    "db:generate": "node scripts/prisma.cjs generate",
+    "db:migrate": "node scripts/prisma.cjs migrate dev",
+    "db:deploy": "node scripts/prisma.cjs migrate deploy",
     "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {

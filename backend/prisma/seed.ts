@@ -1,4 +1,8 @@
-import 'dotenv/config';
+import { config as loadEnv } from 'dotenv';
+import { resolve } from 'node:path';
+
+// Keep local workspace commands consistent with the repository-root .env file.
+loadEnv({ path: resolve(__dirname, '../../.env') });
 import { PrismaClient, Role } from '@prisma/client';
 import argon2 from 'argon2';
 const prisma = new PrismaClient();
