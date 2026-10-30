@@ -1,0 +1,50 @@
+name: Bug report
+description: Report a reproducible defect in the ride-hailing platform.
+title: "[Bug]: "
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the problem and its impact.
+      placeholder: Explain what happened.
+    validations:
+      required: true
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Provide numbered steps that reproduce the issue.
+      placeholder: |
+        1. Open the application.
+        2. Perform the action.
+        3. Observe the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected behavior
+      description: Explain what should have happened.
+    validations:
+      required: true
+  - type: input
+    id: app_version
+    attributes:
+      label: App version
+      description: Include the app version, commit SHA, or release tag.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include platform, operating system, runtime, browser, and any relevant configuration. Never share secrets.
+      placeholder: |
+        Component: Rider / Driver / Admin / Backend
+        OS:
+        Device or browser:
+        Node and npm versions:
+    validations:
+      required: true
