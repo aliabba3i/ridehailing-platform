@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "RideHailing Driver",
+    "slug": "ridehailing-driver",
+    "scheme": "ridehailing-driver",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow RideHailing Driver to share location during active rides."
+        }
+      ]
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ridehailing.driver"
+    },
+    "android": {
+      "package": "com.ridehailing.driver"
+    }
+  }
+}

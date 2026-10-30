@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "RideHailing Rider",
+    "slug": "ridehailing-rider",
+    "scheme": "ridehailing-rider",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow RideHailing to access location for pickup selection."
+        }
+      ]
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ridehailing.rider"
+    },
+    "android": {
+      "package": "com.ridehailing.rider"
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
