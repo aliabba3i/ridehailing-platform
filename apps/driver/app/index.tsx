@@ -11,6 +11,16 @@ export default function DriverHome(){
  useEffect(()=>{let socket:ReturnType<typeof io>|undefined;restoreSession().then(t=>{setToken(t);setReady(true);if(t){load();socket=io(process.env.EXPO_PUBLIC_API_URL||'http://localhost:4000',{auth:{token:t}});socket.on('ride:offer',load);socket.on('ride:updated',load)}});return()=>socket?.disconnect()},[]);
  const auth=async(create:boolean)=>{try{const result=create?await api.register(name,phone,password,'DRIVER'):await api.login(phone,password);await saveSession(result.accessToken);setToken(result.accessToken);await load()}catch(e){Alert.alert('Authentication error',String(e))}};
  const action=async(url:string,data:unknown={})=>{try{await api.request(url,{method:'POST',body:JSON.stringify(data)});await load()}catch(e){Alert.alert('Action failed',String(e))}};
+ useEffect(()=>{
+  if(!token || !online)return;
+  let active=true;
+  let subscription:Location.LocationSubscription|undefined;
+  Location.watchPositionAsync({accuracy:Location.Accuracy.Balanced,timeInterval:7000,distanceInterval:15},position=>{
+    if(!active)return;
+    api.request('/drivers/location',{method:'POST',body:JSON.stringify({lat:position.coords.latitude,lng:position.coords.longitude})}).catch(()=>{});
+  }).then(sub=>{if(active)subscription=sub;else sub.remove()}).catch(()=>{});
+  return()=>{active=false;subscription?.remove()};
+ },[token,online]);
  const toggle=async()=>{if(!online){const permission=await Location.requestForegroundPermissionsAsync();if(permission.status!=='granted'){Alert.alert('Permission needed','Location is required while online');return}const loc=await Location.getCurrentPositionAsync({});await action('/drivers/location',{lat:loc.coords.latitude,lng:loc.coords.longitude})}await action('/drivers/availability',{online:!online});setOnline(!online)};
  if(!ready)return <ActivityIndicator style={{flex:1}}/>;
  if(!token)return <ScrollView contentContainerStyle={{padding:22}}><Text style={{fontSize:27,fontWeight:'bold'}}>Driver portal</Text><TextInput placeholder="Name (registration)" value={name} onChangeText={setName} style={{padding:14,borderWidth:1,marginTop:12}}/><TextInput placeholder="Phone" value={phone} onChangeText={setPhone} style={{padding:14,borderWidth:1,marginTop:12}}/><TextInput placeholder="Password (12+ characters)" secureTextEntry value={password} onChangeText={setPassword} style={{padding:14,borderWidth:1,marginTop:12}}/><Button label="Sign in" onPress={()=>auth(false)}/><Button label="Create driver account" onPress={()=>auth(true)}/><Text style={{marginTop:20}}>New drivers must be verified by an administrator before receiving offers.</Text></ScrollView>;
