@@ -34,6 +34,19 @@ For physical phones set `EXPO_PUBLIC_API_URL` to your computer's reachable LAN U
 
 RIDER requests a trip, DRIVER receives an offer and accepts it, advances through ARRIVING → ARRIVED → IN_PROGRESS → COMPLETED, then RIDER rates the completed ride. The service validates roles and transitions. Driver matching uses recent locations and nearest available drivers. Real-time rooms are authenticated. Quotes support a configured surge multiplier and duration/distance components.
 
+## Roadmap
+
+Planned improvements are tracked in these open issues:
+
+- [Integrate a real payment provider (replace payments stub)](https://github.com/aliabba3i/ridehailing-platform/issues/1)
+- [Replace coordinate-based fare estimates with map routing](https://github.com/aliabba3i/ridehailing-platform/issues/2)
+- [Push notifications for ride status changes](https://github.com/aliabba3i/ridehailing-platform/issues/3)
+- [Driver onboarding and document verification flow](https://github.com/aliabba3i/ridehailing-platform/issues/4)
+- [Add E2E tests for the rider booking flow](https://github.com/aliabba3i/ridehailing-platform/issues/5)
+- [Internationalize mobile apps (i18n)](https://github.com/aliabba3i/ridehailing-platform/issues/6)
+- [Rate limiting and abuse protection for public API](https://github.com/aliabba3i/ridehailing-platform/issues/7)
+- [Admin analytics: trips, revenue and driver performance](https://github.com/aliabba3i/ridehailing-platform/issues/8)
+
 ## Safety and limitations
 
 This is an **engineering starter, not a certified production taxi service**. Payments and OTP are development stubs; routing uses supplied coordinates and straight-line distance rather than a licensed routing provider. Production requires verified identity, vehicle onboarding, robust geolocation permissions/background tracking, external maps, payment reconciliation, abuse controls, provider integration, full end-to-end testing, TLS, secret management, monitoring, backups, legal/privacy review and independent security assessment. Do not expose the default seed admin password or use these endpoints with live payments.
