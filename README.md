@@ -19,7 +19,7 @@ Requires Node 22, npm 10, PostgreSQL 16 and Redis 7 (or Docker).
 1. `cp .env.example .env`; replace JWT secrets and the bootstrap password.
 2. `npm install`
 3. `docker compose up -d postgres redis`
-4. `npm run db:generate`
+4. `npm run build -w @ride/shared` and `npm run db:generate`
 5. `npm run db:migrate`
 6. `npm run db:seed` (optional demo admin; never run on public production data)
 7. `npm run dev`; API is available at `http://localhost:4000`.
