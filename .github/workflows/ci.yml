@@ -1,0 +1,34 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build -w @ride/shared
+      - run: npm run db:generate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+      - run: npm run typecheck
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          JWT_ACCESS_SECRET: ci_test_access_secret_not_for_production_12345
+          JWT_REFRESH_SECRET: ci_test_refresh_secret_not_for_production_12345
+      - run: npm test
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          JWT_ACCESS_SECRET: ci_test_access_secret_not_for_production_12345
+          JWT_REFRESH_SECRET: ci_test_refresh_secret_not_for_production_12345
+      - run: npm run build
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          JWT_ACCESS_SECRET: ci_test_access_secret_not_for_production_12345
+          JWT_REFRESH_SECRET: ci_test_refresh_secret_not_for_production_12345
