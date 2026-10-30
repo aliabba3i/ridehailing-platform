@@ -1,0 +1,23 @@
+{
+  "name": "ridehailing-platform",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/*",
+    "backend",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "npm run dev -w backend",
+    "build": "npm run build -w @ride/shared && npm run build -w @ride/backend && npm run build -w @ride/admin",
+    "test": "npm run test -w @ride/backend",
+    "typecheck": "npm run build -w @ride/shared && npm run typecheck -w @ride/backend",
+    "db:generate": "npm run db:generate -w @ride/backend",
+    "db:migrate": "npm run db:migrate -w @ride/backend",
+    "db:seed": "npm run db:seed -w @ride/backend",
+    "lint": "npm run lint --workspaces --if-present"
+  }
+}
