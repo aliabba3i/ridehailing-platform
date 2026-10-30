@@ -41,3 +41,26 @@ This is an **engineering starter, not a certified production taxi service**. Pay
 ## Quality
 
 `npm run build`, `npm run typecheck`, `npm test`. GitHub Actions runs dependency installation, Prisma generation, TypeScript checks and unit/API tests. See `backend/README.md` and `docs/`.
+
+## Documentation
+
+- [Backend development guide](backend/README.md)
+- [Rider application guide](apps/rider/README.md)
+- [Driver application guide](apps/driver/README.md)
+- [Admin dashboard guide](apps/admin/README.md)
+- [Shared package guide](packages/shared/README.md)
+- [Architecture diagram](docs/architecture-diagram.md)
+- [API reference](docs/api.md)
+- [Database and seed data](docs/seed-data.md)
+- [Deployment](docs/deployment.md)
+- [Releases and GHCR images](docs/release.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Security policy](SECURITY.md)
+
+## Troubleshooting
+
+For local database connection errors, unreachable Expo API URLs, driver verification, token expiry, WebSocket room membership and Docker startup problems, see [docs/troubleshooting.md](docs/troubleshooting.md).
+
+## Publishing backend images
+
+Publishing a semantic-version GitHub Release triggers the GHCR publishing workflow, creating versioned and `latest` backend Docker image tags. See [docs/release.md](docs/release.md) for requirements, validation and deployment precautions.

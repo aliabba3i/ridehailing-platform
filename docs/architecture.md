@@ -13,3 +13,9 @@ REQUESTED → SEARCHING → ACCEPTED → ARRIVING → ARRIVED → IN_PROGRESS �
 
 ## Production extensions
 Replace straight-line travel estimate with road-routing provider, add automatic offer expiry, payment reconciliation, geofence-based safety controls, driver background location permission handling, user consent flows, audit streams, centralized telemetry and managed infrastructure.
+
+## Diagrams and operational boundaries
+
+See [architecture-diagram.md](architecture-diagram.md) for service topology and ride state diagrams. Ratings are stored as separate resources and do not introduce an additional persisted ride status.
+
+See [seed-data.md](seed-data.md) and [troubleshooting.md](troubleshooting.md) for environment initialization and incident triage.

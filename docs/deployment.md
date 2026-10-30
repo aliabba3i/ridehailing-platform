@@ -10,3 +10,7 @@ Use PostgreSQL 16, Redis 7 and Node 22. Docker Compose is designed for single-ho
 6. Add health checks, alerting, structured logs, centralized audit records and rollout/rollback plans.
 
 The demo payment provider, geospatial approximations and simulated routing **must not** be used for a paid production taxi business. Integrate a regulated payment provider, consent/privacy workflow, verified driver onboarding, background location SDK and road routing before any real launch.
+
+## Container registry
+
+A published GitHub Release triggers the backend image build and GHCR push using `backend/Dockerfile`. Version tags and `latest` are published to `ghcr.io/aliabba3i/ridehailing-platform`. See [release.md](release.md) for the exact publishing and security prerequisites.
