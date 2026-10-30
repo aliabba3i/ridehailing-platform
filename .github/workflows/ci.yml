@@ -12,7 +12,7 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
       - run: npm run build -w @ride/shared
       - run: npm run db:generate
         env:
