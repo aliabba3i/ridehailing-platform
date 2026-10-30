@@ -1,0 +1,5 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body{background:#f5f7fb;color:#0f172a;font-family:Arial,Helvetica,sans-serif}
+input,button{font:inherit}
