@@ -5,7 +5,7 @@ import { assertTransition } from '../lifecycle';
 import { closestDriver } from '../matching';
 import { price, pricingConfig } from '../pricing';
 import { emitRide, emitUser } from '../realtime';
-import type { Point } from '@ride/shared';
+import { distanceKm, type Point } from '@ride/shared';
 const active = ['ACCEPTED','ARRIVING','ARRIVED','IN_PROGRESS'] as const;
 export async function createRide(riderId: string, pickup: Point, dropoff: Point) {
   const quote = price(pickup, dropoff, pricingConfig());
@@ -20,6 +20,9 @@ export async function createRide(riderId: string, pickup: Point, dropoff: Point)
 export async function acceptRide(rideId: string, driverId: string) {
   const profile = await db.driverProfile.findUnique({ where: { userId: driverId } });
   if (!profile?.online || !profile.verified || !profile.locationUpdatedAt || Date.now() - profile.locationUpdatedAt.getTime() > 60000) throw new HttpError(403, 'Driver is unavailable or not verified');
+  const target = await db.ride.findUnique({ where: { id: rideId }, select: { pickupLat: true, pickupLng: true, status: true } });
+  if (!target || target.status !== 'SEARCHING') throw new HttpError(409, 'Ride is not available');
+  if (profile.lat == null || profile.lng == null || distanceKm({ lat: profile.lat, lng: profile.lng }, { lat: target.pickupLat, lng: target.pickupLng }) > Number(process.env.MAX_SEARCH_RADIUS_KM ?? 8)) throw new HttpError(403, 'Pickup is outside driver service radius');
   const ride = await db.$transaction(async tx => {
     const busy = await tx.ride.findFirst({ where: { driverId, status: { in: [...active] } } });
     if (busy) throw new HttpError(409, 'Driver is already assigned');
