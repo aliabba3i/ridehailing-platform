@@ -5,9 +5,28 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-enum Role { RIDER DRIVER ADMIN }
-enum RideStatus { REQUESTED SEARCHING ACCEPTED ARRIVING ARRIVED IN_PROGRESS COMPLETED CANCELLED EXPIRED }
-enum PaymentStatus { PENDING SUCCEEDED FAILED REFUNDED }
+enum Role {
+  RIDER
+  DRIVER
+  ADMIN
+}
+enum RideStatus {
+  REQUESTED
+  SEARCHING
+  ACCEPTED
+  ARRIVING
+  ARRIVED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
 model User {
   id String @id @default(uuid()) @db.Uuid
   name String
