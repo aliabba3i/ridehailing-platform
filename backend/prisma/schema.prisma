@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+enum Role { RIDER DRIVER ADMIN }
+enum RideStatus { REQUESTED SEARCHING ACCEPTED ARRIVING ARRIVED IN_PROGRESS COMPLETED CANCELLED EXPIRED }
+enum PaymentStatus { PENDING SUCCEEDED FAILED REFUNDED }
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  name String
+  phone String @unique
+  passwordHash String
+  role Role @default(RIDER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  driver DriverProfile?
+  riderRides Ride[] @relation("RiderRides")
+  driverRides Ride[] @relation("DriverRides")
+  refreshTokens RefreshToken[]
+  ratingsGiven Rating[] @relation("RatingsGiven")
+  ratingsReceived Rating[] @relation("RatingsReceived")
+}
+model DriverProfile {
+  userId String @id @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleMake String?
+  vehicleModel String?
+  plate String?
+  verified Boolean @default(false)
+  online Boolean @default(false)
+  lat Float?
+  lng Float?
+  locationUpdatedAt DateTime?
+}
+model RefreshToken {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([userId])
+}
+model Ride {
+  id String @id @default(uuid()) @db.Uuid
+  riderId String @db.Uuid
+  driverId String? @db.Uuid
+  rider User @relation("RiderRides", fields: [riderId], references: [id])
+  driver User? @relation("DriverRides", fields: [driverId], references: [id])
+  status RideStatus @default(REQUESTED)
+  pickupLat Float
+  pickupLng Float
+  dropoffLat Float
+  dropoffLng Float
+  distanceKm Float
+  durationMin Float
+  surge Float @default(1)
+  fare Int
+  currency String @default("IRR")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  completedAt DateTime?
+  payment Payment?
+  rating Rating?
+  events RideEvent[]
+  @@index([status, createdAt])
+  @@index([riderId, createdAt])
+  @@index([driverId, status])
+}
+model RideEvent {
+  id String @id @default(uuid()) @db.Uuid
+  rideId String @db.Uuid
+  ride Ride @relation(fields: [rideId], references: [id], onDelete: Cascade)
+  actorId String? @db.Uuid
+  fromStatus RideStatus?
+  toStatus RideStatus
+  createdAt DateTime @default(now())
+  @@index([rideId, createdAt])
+}
+model Payment {
+  id String @id @default(uuid()) @db.Uuid
+  rideId String @unique @db.Uuid
+  ride Ride @relation(fields: [rideId], references: [id])
+  amount Int
+  currency String @default("IRR")
+  status PaymentStatus @default(PENDING)
+  provider String @default("mock")
+  providerReference String? @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Rating {
+  id String @id @default(uuid()) @db.Uuid
+  rideId String @unique @db.Uuid
+  ride Ride @relation(fields: [rideId], references: [id])
+  fromUserId String @db.Uuid
+  toUserId String @db.Uuid
+  fromUser User @relation("RatingsGiven", fields: [fromUserId], references: [id])
+  toUser User @relation("RatingsReceived", fields: [toUserId], references: [id])
+  score Int
+  comment String?
+  createdAt DateTime @default(now())
+}
