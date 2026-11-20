@@ -53,7 +53,7 @@ This is an **engineering starter, not a certified production taxi service**. Pay
 
 The repository's local development baseline is **Node.js 22** (see `.nvmrc`). The admin Docker image also uses Node.js 22. The **backend Docker image uses Node.js 26 LTS**; this is an intentional, backend-only runtime upgrade, not a requirement to change every developer workstation or mobile app at once.
 
-Every pull request is checked on **Node.js 22 and 26** for dependency installation, Prisma client generation, TypeScript, tests and application builds. CI also builds the backend Docker image to catch container-specific incompatibilities. A passing CI run does **not** replace a staging deployment test against PostgreSQL and Redis.
+Every pull request is checked on **Node.js 22 and 26** for dependency installation, Prisma client generation, TypeScript, tests and application builds. CI also builds and smoke-tests the backend Docker image with PostgreSQL and Redis to catch container-specific incompatibilities. A passing CI run does **not** replace a staging deployment test against PostgreSQL and Redis.
 
 Before deploying an updated backend image:
 
