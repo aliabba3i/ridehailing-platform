@@ -15,7 +15,7 @@ jobs:
       matrix:
         node: ['22', '26']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
@@ -47,7 +47,7 @@ jobs:
       JWT_ACCESS_SECRET: ci_only_access_secret_do_not_use_in_production_12345
       JWT_REFRESH_SECRET: ci_only_refresh_secret_do_not_use_in_production_12345
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build backend Docker image
         run: docker compose build backend
       - name: Start PostgreSQL, Redis and backend; smoke-test API
