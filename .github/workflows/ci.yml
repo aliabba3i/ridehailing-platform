@@ -3,14 +3,22 @@ on:
   push:
     branches: [main]
   pull_request:
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
+    name: build-and-test (Node.js ${{ matrix.node }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '26']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{ matrix.node }}
       - run: npm install --no-audit --no-fund
       - run: npm run build -w @ride/shared
       - run: npm run db:generate
@@ -31,3 +39,41 @@ jobs:
           DATABASE_URL: postgresql://test:test@localhost:5432/test
           JWT_ACCESS_SECRET: ci_test_access_secret_not_for_production_12345
           JWT_REFRESH_SECRET: ci_test_refresh_secret_not_for_production_12345
+
+  backend-docker-build:
+    name: backend-docker-smoke (Node.js 26)
+    runs-on: ubuntu-latest
+    env:
+      JWT_ACCESS_SECRET: ci_only_access_secret_do_not_use_in_production_12345
+      JWT_REFRESH_SECRET: ci_only_refresh_secret_do_not_use_in_production_12345
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build backend Docker image
+        run: docker compose build backend
+      - name: Start PostgreSQL, Redis and backend; smoke-test API
+        run: |
+          docker compose up -d postgres redis backend
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://localhost:4000/ready > /dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 40 ]; then
+              echo "Backend did not become ready after 120 seconds"
+              exit 1
+            fi
+            sleep 3
+          done
+          curl --fail-with-body --silent --show-error --output /dev/null \
+            --header 'Content-Type: application/json' \
+            --data '{"name":"CI Rider","phone":"ci-rider-0001","password":"ci-testing-password-12345","role":"RIDER"}' \
+            http://localhost:4000/auth/register
+          curl --fail-with-body --silent --show-error --output /dev/null \
+            --header 'Content-Type: application/json' \
+            --data '{"phone":"ci-rider-0001","password":"ci-testing-password-12345"}' \
+            http://localhost:4000/auth/login
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail=150 backend postgres redis
+      - name: Stop test containers
+        if: always()
+        run: docker compose down

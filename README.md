@@ -49,6 +49,21 @@ This is an **engineering starter, not a certified production taxi service**. Pay
 
 `npm run build`, `npm run typecheck`, `npm test`. GitHub Actions runs dependency installation, Prisma generation, TypeScript checks and unit/API tests. See `backend/README.md` and `docs/`.
 
+## Node.js versions and backend Docker upgrade
+
+The repository's local development baseline is **Node.js 22** (see `.nvmrc`). The admin Docker image also uses Node.js 22. The **backend Docker image uses Node.js 26 LTS**; this is an intentional, backend-only runtime upgrade, not a requirement to change every developer workstation or mobile app at once.
+
+Every pull request is checked on **Node.js 22 and 26** for dependency installation, Prisma client generation, TypeScript, tests and application builds. CI also builds and smoke-tests the backend Docker image with PostgreSQL and Redis to catch container-specific incompatibilities. A passing CI run does **not** replace a staging deployment test against PostgreSQL and Redis.
+
+Before deploying an updated backend image:
+
+1. Confirm the GitHub Actions checks pass on the exact commit to be deployed.
+2. Build and smoke-test the backend container in a non-production environment.
+3. Verify database migrations, authentication, API responses and Socket.IO connectivity.
+4. Keep the previously working image available for rollback; never remove database volumes as part of an application rollback.
+
+See the [Node.js and Docker upgrade guide](docs/nodejs-compatibility.md) for commands, validation and rollback steps.
+
 ## Documentation
 
 - [Backend development guide](backend/README.md)
