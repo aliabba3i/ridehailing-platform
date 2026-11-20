@@ -30,6 +30,7 @@ The GitHub Actions CI workflow:
 3. Generates the Prisma client.
 4. Runs TypeScript checks, backend tests, and application builds.
 5. Builds the backend Docker image using its declared Node.js 26 base image.
+6. Starts PostgreSQL, Redis and the backend container, checks database readiness via `/ready`, then registers and logs in a disposable test rider.
 
 Wait for all checks to pass **on the current pull request commit** before merging. A green check from Node.js 22 alone does not validate the new Docker runtime. Be aware that the workflow currently uses `npm install` rather than a committed lockfile; it is a compatibility check, not a fully reproducible dependency audit.
 
@@ -45,6 +46,7 @@ docker compose up -d postgres redis
 docker compose up -d backend
 docker compose ps
 curl --fail --show-error http://localhost:4000/health
+curl --fail --show-error http://localhost:4000/ready
 ```
 
 **Important:** The backend container automatically runs `prisma migrate deploy` on startup. Use a disposable or backed-up staging database. Check logs after startup:
@@ -59,6 +61,7 @@ Then verify, in staging, registration/login and refresh tokens, Prisma database 
 
 - [ ] Node.js 22 and 26 CI jobs both pass.
 - [ ] Backend Docker image builds successfully on CI.
+- [ ] CI container smoke tests pass for database readiness, registration and login.
 - [ ] Staging container starts and `/health` returns a successful response.
 - [ ] Migrations are reviewed, backed up and applied successfully in staging.
 - [ ] Authentication, ride dispatch/lifecycle, Redis and Socket.IO have been smoke-tested.
